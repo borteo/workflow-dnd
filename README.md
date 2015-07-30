@@ -1,5 +1,5 @@
-
-# workflow-dnd (workflow-dnd)
+workflow-dnd
+===========
 
 > Drag and Drop FTW!
 
