@@ -1,19 +1,15 @@
 var React = require('react');
-var SelectionMixin = require('../mixins/SelectionMixin.jsx');
+var DragMixin = require('../mixins/DragMixin.jsx');
 var SelectionStore = require('../stores/SelectionStore');
 
 
-function styleItem() {
-  return SelectionStore.getStyle( this.props.item );
-}
-
 var Card = React.createClass({
   
-  mixins: [SelectionMixin],
+  mixins: [DragMixin],
 
   getInitialState: function() {
     return {
-      style : this.getStyle( this.props.item )
+      style : this.getStyle()
     };
   },
 

@@ -1,11 +1,34 @@
+var _              = require('underscore');
 var CardDispatcher = require('../dispatchers/CardDispatcher.js');
 var CardConstants  = require('../constants/CardConstants.js');
 var assign         = require('object-assign');
 var EventEmitter   = require('events').EventEmitter;
 
+
 var CHANGE_EVENT = 'change';
 
-var _cards = [];
+// cards model
+var _cards     = [];
+
+// dragging card state - does it make sense here?
+var _dragState = {
+  item: null,
+  initialGroupID: 0,
+  newGroupID: 0,
+  initialMouseX: 0,
+  initialMouseY: 0,
+  x: 0,
+  y: 0
+};
+
+function setStore( data ) {
+  _cards = data; // TODO
+}
+
+function setDragState ( item ) {
+  _dragState = _.assign( _dragState, item );
+}
+
 
 var CardStore = assign(EventEmitter.prototype, {
 
@@ -21,33 +44,27 @@ var CardStore = assign(EventEmitter.prototype, {
     this.removeListener(CHANGE_EVENT, callback);
   },
 
-  setStore: function( data ) {
-    _cards = data; // TODO
-  },
-
   getStore: function() {
     // return _cards;
     return [
       {
         id: 1,
-        name: "First card",
-        itemWidth: 290,
-        itemHeight: 180
+        name: "First card"
       }, 
       {
         id: 2,
-        name: "Second card",
-        itemWidth: 290,
-        itemHeight: 180
+        name: "Second card"
       },
       {
         id: 3,
-        name: "Third card",
-        itemWidth: 290,
-        itemHeight: 180
+        name: "Third card"
       }
     ];
 
+  },
+
+  getDragState: function() {
+    return _dragState;
   },
 
   dispatcherIndex:CardDispatcher.register(function( payload ) {
@@ -55,10 +72,13 @@ var CardStore = assign(EventEmitter.prototype, {
     var action = payload.action;
     var change = true;
 
-    switch(action.actionType) {
+    switch( action.actionType ) {
+
+      case CardConstants.SET_DRAG_STATE :
+        setDragState( action.item );
+      break;
 
       case CardConstants.ADD_CARD :
-        console.log('add card');
         break;
 
       default :
