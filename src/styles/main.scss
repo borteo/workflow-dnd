@@ -1,0 +1,25 @@
+@import "./normalize.css";
+
+$primary-color: green;
+
+h1 {
+  color: $primary-color;
+}
+
+
+.card-wrapper {
+  margin-top: 50px;
+  margin-left: 100px;
+  border: 1px solid black;
+  padding: 2em;
+  width: 400px;
+  position: relative;
+}
+.card {
+  margin-bottom: 20px;
+  width: 290px;
+  height: 180px;
+  background: #CCC;
+  padding: 1em 2em;
+  position: absolute;
+}
