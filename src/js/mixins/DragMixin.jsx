@@ -1,7 +1,5 @@
 var React           = require('react');
 var _               = require('underscore');
-var SelectionStore  = require('../stores/SelectionStore');
-var SelectionAction = require('../actions/SelectionAction');
 
 var CardStore  = require('../stores/CardStore');
 var CardAction = require('../actions/CardAction');

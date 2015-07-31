@@ -14,6 +14,7 @@ module.exports = {
     }
   },
   sass: {
+    includePaths: require('node-bourbon').includePaths,
     src: src + '/styles/**/*.{sass,scss,css}',
     dest: dest + '/styles',
     settings: {
