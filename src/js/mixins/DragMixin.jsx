@@ -40,25 +40,19 @@ var SelectionMixin = {
     return Math.floor(index / _itemParams.columns);
   },
 
-  getColumn: function(index){
-    return index - (this.getRow(index) * _itemParams.columns);
-  },
-
   getPosition:function( index ){
-    var col = this.getColumn(index);
     var row = this.getRow(index);
     var margin = _itemParams.horizontalMargin;
     var width = _itemParams.itemWidth;
 
     return {
-      x: Math.round((col * width) + (col * margin)),
       y: Math.round((_itemParams.itemHeight + _itemParams.verticalMargin) * row)
     };
   },
 
   getTransform: function( index ){
     var position = this.getPosition(index);
-    return 'translate3d(' + position.x + 'px, ' + position.y + 'px, 0)';
+    return 'translate3d( 0, ' + position.y + 'px, 0)';
   },
 
 
@@ -73,7 +67,7 @@ var SelectionMixin = {
       return;
     }
 
-    transform = this.getTransform( this.props.dataKey );
+    transform = this.getTransform( this.props.item.sort );
     var style = {
       width: _itemParams.itemWidth + 'px',
       height: _itemParams.itemHeight + 'px',
@@ -96,24 +90,24 @@ var SelectionMixin = {
     return style;
   },
 
-
   dragStart: function( e ) {
-    console.info('drag start')
+    console.info('drag start');
 
     // left click
     if ( e.button !== 0 ) {
       return;
     }
 
-    e.preventDefault();
-
     document.addEventListener('mousemove', this.dragMove, false);
     document.addEventListener('mouseup', this.dragEnd, false);
+
+    e.preventDefault();
 
     var node = React.findDOMNode(this);
     var rect = node.getBoundingClientRect();
 
     CardAction.setDragState({
+      item: this.props.item,
       initialMouseX: e.clientX,
       initialMouseY: e.clientY,
       initialX: Math.floor(rect.left),
@@ -123,10 +117,10 @@ var SelectionMixin = {
   },
 
   dragMove: function( e ) {
-    console.info('drag move')
+    console.info('drag move');
     var tolerance = 3;
 
-    var node = this.getDOMNode();
+    var node = React.findDOMNode(this);
     var dragState = CardStore.getDragState();
 
     if (
@@ -136,13 +130,35 @@ var SelectionMixin = {
       return;
     }
 
+    var clientX = e.clientX;
+    var clientY = e.clientY;
+
+    var targetKey;
+    var targetElement = document.elementFromPoint(clientX, clientY);
+
+    while ( targetElement.parentNode ) {
+      if ( targetElement.getAttribute('data-key' )) {
+        targetKey = targetElement.getAttribute('data-key');
+        break;
+      }
+      targetElement = targetElement.parentNode;
+    }
+
+    // sort can be a configurable attribute dragState.item[conf]
+    if ( targetKey && targetKey !== dragState.item.sort ) {
+      
+      CardAction.onMove({
+        source: dragState.item.sort,
+        target: targetKey
+      });
+    }
+
     var x = e.clientX - ( dragState.initialMouseX - dragState.initialX );
     var y = e.clientY - ( dragState.initialMouseY - dragState.initialY );
 
-    CardAction.setDragState({
-      item: this.props.item
-      //, initialGroupID: this.props.groupID  // we can use it to compare swimlanes
-    });
+    // CardAction.setDragState({
+    //   //, initialGroupID: this.props.groupID  // we can use it to compare swimlanes
+    // });
 
     // transform inline -- is it a good idea?
     var transform = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
@@ -161,7 +177,6 @@ var SelectionMixin = {
 
     node.style.pointerEvents = 'none';
 
-
     if( !_dragTimeout ) {
       clearTimeout( _dragTimeout );
       _dragTimeout = null;
@@ -178,12 +193,33 @@ var SelectionMixin = {
   dragEnd: function( e ) {
     console.info('endDrag');
 
+    var tolerance = 3;
+
     if( !_dragTimeout ) {
       clearTimeout( _dragTimeout );
       _dragTimeout = null;
     }
 
-     CardAction.setDragState({
+    var dragState = CardStore.getDragState();
+
+    CardAction.setDragState({
+      item: this.props.item
+      //, initialGroupID: this.props.groupID  // we can use it to compare swimlanes
+    });
+
+
+    var node = React.findDOMNode(this);
+
+    var transform = this.getTransform( this.props.item.sort );
+
+    node.style.position = "absolute";
+    node.style.webkitTransform = transform;
+    node.style.msTransform = transform;
+    node.style.transform = transform;
+
+    node.style.pointerEvents = 'auto';
+
+    CardAction.setDragState({
       initialMouseX: 0,
       initialMouseY: 0,
       x: 0,

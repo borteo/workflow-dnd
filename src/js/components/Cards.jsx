@@ -33,7 +33,6 @@ var Cards = React.createClass({
           return (
             <Card 
               key={i}
-              dataKey={i}
               dragEnabled={true}
               item={card}
               itemWidth={350}
@@ -47,7 +46,7 @@ var Cards = React.createClass({
 
   _onChange: function() {
 
-    console.log('_onChange Cards')
+    console.info('_onChange Cards')
     //this.setState( getCardState() );
   }
 

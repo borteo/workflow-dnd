@@ -8,7 +8,23 @@ var EventEmitter   = require('events').EventEmitter;
 var CHANGE_EVENT = 'change';
 
 // cards model
-var _cards     = [];
+var _cards = [
+      {
+        id: 1,
+        sort: 0,
+        name: "Ugly First card"
+      }, 
+      {
+        id: 2,
+        sort: 1,
+        name: "Horrible Second card"
+      },
+      {
+        id: 3,
+        sort: 2,
+        name: "Repugnant Third card"
+      }
+    ];
 
 // dragging card state - does it make sense here?
 var _dragState = {
@@ -29,6 +45,27 @@ function setDragState ( item ) {
   _dragState = _.assign( _dragState, item );
 }
 
+function onMove( items ) {
+
+  var source = _.find(_cards, {sort: parseInt(items.source, 10)});
+  var target = _.find(_cards, {sort: parseInt(items.target, 10)});
+
+  var targetSort = target.sort;
+
+  //CAREFUL, For maximum performance we must maintain the array's order, but change sort
+  _cards.forEach(function(item){
+    //Decrement sorts between positions when target is greater
+    if(target.sort > source.sort && (item.sort <= target.sort && item.sort > source.sort)){
+      item.sort --;
+    //Incremenet sorts between positions when source is greator
+    }else if(item.sort >= target.sort && item.sort < source.sort){
+      item.sort ++;
+    }
+  });
+
+  source.sort = targetSort;
+}
+
 
 var CardStore = assign(EventEmitter.prototype, {
 
@@ -45,22 +82,10 @@ var CardStore = assign(EventEmitter.prototype, {
   },
 
   getStore: function() {
-    // return _cards;
-    return [
-      {
-        id: 1,
-        name: "First card"
-      }, 
-      {
-        id: 2,
-        name: "Second card"
-      },
-      {
-        id: 3,
-        name: "Third card"
-      }
-    ];
-
+    // order by sort
+    return _cards.slice(0).sort(function( a, b ) {
+      return a.sort - b.sort;
+    });
   },
 
   getDragState: function() {
@@ -78,8 +103,9 @@ var CardStore = assign(EventEmitter.prototype, {
         setDragState( action.item );
       break;
 
-      case CardConstants.ADD_CARD :
-        break;
+      case CardConstants.ON_MOVE :
+        onMove( action.item );
+      break;
 
       default :
         change = false;

@@ -1,6 +1,6 @@
 var React = require('react');
 var DragMixin = require('../mixins/DragMixin.jsx');
-var SelectionStore = require('../stores/SelectionStore');
+var CardStore = require('../stores/CardStore.js');
 
 
 var Card = React.createClass({
@@ -14,26 +14,27 @@ var Card = React.createClass({
   },
 
   componentWillMount: function() {
-    SelectionStore.addChangeListener(this._onChange);
+    CardStore.addChangeListener(this._onChange);
   },
 
   componentWillUnmount: function() {
-    SelectionStore.removeChangeListener( this._onChange );
+    CardStore.removeChangeListener( this._onChange );
   },
 
   _onChange: function() {
-    console.log('_onChange Card');
+    console.info('_onChange Card');
     this.setState({
       style: this.getStyle()
     });
   },
 
-  render: function() { 
-    var card = this.props.item;
+  render: function() {
+    var card    = this.props.item;
 
     return (
       <div 
         className="card"
+        data-key={card.sort}
         style={this.state.style}
       >
         <p>{card.name}</p>

@@ -10,13 +10,13 @@ var CardActions = {
     });
   },
   
-  addCard: function( item ) {
+  onMove: function( item ) {
     CardDispatcher.handleViewAction({
-      actionType: CardConstants.ADD_CARD,
+      actionType: CardConstants.ON_MOVE,
       item: item
     });
   },
-  
+
   removeCard: function( item ) {
     CardDispatcher.handleViewAction({
       actionType: CardConstants.REMOVE_CARD,
