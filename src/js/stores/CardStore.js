@@ -12,17 +12,44 @@ var _cards = [
       {
         id: 1,
         sort: 0,
-        name: "Ugly First card"
+        name: "1 - Group 1",
+        groupID: 1
       }, 
       {
         id: 2,
         sort: 1,
-        name: "Horrible Second card"
+        name: "2 - Group 1",
+        groupID: 1
       },
       {
         id: 3,
         sort: 2,
-        name: "Repugnant Third card"
+        name: "3 - Group 1",
+        groupID: 1
+      },
+      {
+        id: 4,
+        sort: 3,
+        name: "4 - Group 1",
+        groupID: 1
+      },
+      {
+        id: 1,
+        sort: 0,
+        name: "1 - Group 2",
+        groupID: 2
+      }, 
+      {
+        id: 2,
+        sort: 1,
+        name: "2 - Group 2",
+        groupID: 2
+      },
+      {
+        id: 3,
+        sort: 2,
+        name: "3 - Group 2",
+        groupID: 2
       }
     ];
 
@@ -30,6 +57,7 @@ var _cards = [
 var _dragState = {
   item: null,
   initialGroupID: 0,
+  targetGroupID: 0,
   newGroupID: 0,
   initialMouseX: 0,
   initialMouseY: 0,
@@ -47,24 +75,41 @@ function setDragState ( item ) {
 
 function onMove( items ) {
 
-  var source = _.find(_cards, {sort: parseInt(items.source, 10)});
-  var target = _.find(_cards, {sort: parseInt(items.target, 10)});
+  console.log('chiamatoooooooooooooo')
+
+  var source = _cards.filter( function( card ) {
+    return card.sort === parseInt(items.source, 10) && card.groupID === parseInt(_dragState.initialGroupID, 10);
+  })[0];
+  var target = _cards.filter( function( card ) {
+    return card.sort === parseInt(items.target, 10) && card.groupID === parseInt(items.targetGroupID, 10);
+  })[0];
+
+  
 
   var targetSort = target.sort;
 
   //CAREFUL, For maximum performance we must maintain the array's order, but change sort
-  _cards.forEach(function(item){
+  _cards.forEach(function( item ) {
     //Decrement sorts between positions when target is greater
-    if(target.sort > source.sort && (item.sort <= target.sort && item.sort > source.sort)){
+    if ( target.sort > source.sort && (item.sort <= target.sort && item.sort > source.sort)){
       item.sort --;
     //Incremenet sorts between positions when source is greator
-    }else if(item.sort >= target.sort && item.sort < source.sort){
+    } else if ( item.sort >= target.sort && item.sort < source.sort ) {
       item.sort ++;
     }
   });
 
   source.sort = targetSort;
 }
+
+var itemsByGroupID = function( groupID ) {
+  var elemtns =  _cards.filter(function( card ) {
+    return card.groupID === groupID;
+  });
+
+  // console.log('elemtns', elemtns);
+  return elemtns;
+};
 
 
 var CardStore = assign(EventEmitter.prototype, {
@@ -90,6 +135,10 @@ var CardStore = assign(EventEmitter.prototype, {
 
   getDragState: function() {
     return _dragState;
+  },
+
+  getItemsByGroupID: function( groupID ) {
+    return itemsByGroupID( groupID );
   },
 
   dispatcherIndex:CardDispatcher.register(function( payload ) {

@@ -1,5 +1,5 @@
 var React = require('react');
-var Cards = require('./components/Cards.jsx');
+var Workflow = require('./components/Workflow.jsx');
 
 
-React.render(<Cards />, document.getElementById('main'));
+React.render(<Workflow />, document.getElementById('main'));

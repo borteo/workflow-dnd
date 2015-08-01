@@ -1,27 +1,23 @@
-@import "./normalize.css";
-
-$primary-color: green;
-
-h1 {
-  color: $primary-color;
-}
-
+@import './normalize.css';
+@import 'bourbon';
 
 .card-wrapper {
-  margin-top: 50px;
-  margin-left: 100px;
-  border: 1px solid black;
-  padding: 2em;
-  width: 400px;
   position: relative;
+  width: 350px;
+  margin: 2px;
+  border: 1px solid black;
+  display: inline-block;
 }
 .card {
-  margin-bottom: 20px;
-  width: 290px;
-  height: 180px;
-  background: #CCC;
-  padding: 1em 2em;
   position: absolute;
-  top: 0;
-  left: 0;
+  margin-bottom: 20px;
+  padding: 1em 2em;
+  border-radius: .2em;
+  background: rgb(200,200,200);
+}
+.card:hover {
+  background: rgba(200,200,200, .8);
+}
+.card:active {
+  background: rgba(255,155,200, .8);
 }

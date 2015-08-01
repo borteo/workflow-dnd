@@ -1,23 +1,22 @@
-var React           = require('react');
-var _               = require('underscore');
+var React      = require('react');
+var _          = require('underscore');
 
 var CardStore  = require('../stores/CardStore');
 var CardAction = require('../actions/CardAction');
 
 
-var _dragTimeout = null;
 var _itemParams = {
   itemWidth: 320,
   itemHeight: 220,
   horizontalMargin: 0,
   verticalMargin: 20,
   columns: 1,
-  animation: false,
+  animation: false, //"all .1s ease-in",
   isFiltered: false
 };
 
 
-var SelectionMixin = {
+var DragMixin = {
 
   getInitialState: function() {
     _itemParams = _.assign( _itemParams, this.props );
@@ -38,19 +37,25 @@ var SelectionMixin = {
     return Math.floor(index / _itemParams.columns);
   },
 
+  getColumn: function(index) {
+    return index - (this.getRow(index) * _itemParams.columns);
+  },
+
   getPosition:function( index ){
+    var col = this.getColumn(index);
     var row = this.getRow(index);
     var margin = _itemParams.horizontalMargin;
     var width = _itemParams.itemWidth;
 
     return {
+      x: Math.round((col * width) + (col * margin)),
       y: Math.round((_itemParams.itemHeight + _itemParams.verticalMargin) * row)
     };
   },
 
   getTransform: function( index ){
     var position = this.getPosition(index);
-    return 'translate3d( 0, ' + position.y + 'px, 0)';
+    return 'translate3d(' + position.x + 'px, ' + position.y + 'px, 0)';
   },
 
 
@@ -75,14 +80,15 @@ var SelectionMixin = {
       transform: transform,
       position: 'absolute',
       boxSizing: 'border-box',
-      display: _itemParams.isFiltered ? 'none' : 'block'
+      display: _itemParams.isFiltered ? 'none' : 'block'   // show/hide when filtered -- might be useful
     };
 
+
     if ( _itemParams.animation ) {
-      style.WebkitTransition = '-webkit-' + _itemParams.animation;
-      style.MozTransition = '-moz-' + _itemParams.animation;
-      style.msTransition = 'ms-' + _itemParams.animation;
-      style.transition = _itemParams.animations;
+      style.WebkitTransition = _itemParams.animation;
+      style.MozTransition = _itemParams.animation;
+      style.msTransition = _itemParams.animation;
+      style.transition = _itemParams.animation;
     }
 
     return style;
@@ -131,32 +137,41 @@ var SelectionMixin = {
     var clientX = e.clientX;
     var clientY = e.clientY;
 
-    var targetKey;
+    // CardAction.setDragState({
+    //   initialGroupID: this.props.item.groupID
+    // });
+
+    console.log('----------------');
+
+    var targetKey, targetGroupID;
     var targetElement = document.elementFromPoint(clientX, clientY);
 
     while ( targetElement.parentNode ) {
       if ( targetElement.getAttribute('data-key' )) {
-        targetKey = targetElement.getAttribute('data-key');
+        targetKey     = targetElement.getAttribute('data-key');
+        targetGroupID = targetElement.getAttribute('data-group');
         break;
       }
       targetElement = targetElement.parentNode;
     }
 
-    // sort can be a configurable attribute dragState.item[conf]
+
+
+    // TODO sort property be configurable dragState.item[conf]
     if ( targetKey && targetKey !== dragState.item.sort ) {
       
+      
+
       CardAction.onMove({
         source: dragState.item.sort,
-        target: targetKey
+        target: targetKey,
+        targetGroupID: targetGroupID
       });
+
     }
 
     var x = e.clientX - ( dragState.initialMouseX - dragState.initialX );
     var y = e.clientY - ( dragState.initialMouseY - dragState.initialY );
-
-    // CardAction.setDragState({
-    //   //, initialGroupID: this.props.groupID  // we can use it to compare swimlanes
-    // });
 
     // transform inline -- is it a good idea?
     var transform = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
@@ -175,15 +190,6 @@ var SelectionMixin = {
 
     node.style.pointerEvents = 'none';
 
-    if( !_dragTimeout ) {
-      clearTimeout( _dragTimeout );
-      _dragTimeout = null;
-    }
-
-    _dragTimeout = setTimeout(function dragTO() {
-      SelectionAction.dragMoveItem();
-    }, 15);
-
     e.stopPropagation();
     e.preventDefault();
   },
@@ -192,12 +198,6 @@ var SelectionMixin = {
     console.info('endDrag');
 
     var tolerance = 3;
-
-    if( !_dragTimeout ) {
-      clearTimeout( _dragTimeout );
-      _dragTimeout = null;
-    }
-
     var dragState = CardStore.getDragState();
 
     CardAction.setDragState({
@@ -217,12 +217,21 @@ var SelectionMixin = {
 
     node.style.pointerEvents = 'auto';
 
+    // restore transition
+    if ( _itemParams.animation ) {
+      node.style.WebkitTransition = _itemParams.animation;
+      node.style.MozTransition = _itemParams.animation;
+      node.style.msTransition = _itemParams.animation;
+      node.style.transition = _itemParams.animation;
+    }
+
     CardAction.setDragState({
       initialMouseX: 0,
       initialMouseY: 0,
       x: 0,
       y: 0,
-      item: null
+      item: null,
+      initialGroupID: null
     });
 
     document.removeEventListener('mousemove', this.dragMove);
@@ -231,4 +240,4 @@ var SelectionMixin = {
 
 };
 
-module.exports = SelectionMixin;
+module.exports = DragMixin;

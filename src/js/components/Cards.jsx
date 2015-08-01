@@ -4,11 +4,25 @@ var CardStore = require('../stores/CardStore.js');
 
 
 function getCardState() {
+
+  var allCards = CardStore.getStore();
+  var totalHeight = getTotalHeight( allCards );
+
   return {
-    allCards: CardStore.getStore()
+    allCards: allCards,
+    style: {
+      height: totalHeight + 'px'
+    }
   };
 }
 
+function getTotalHeight( cards ){
+  // get these values from props / store / somewhere?
+  var rowHeight = 125;
+  var verticalMargin = 20;
+
+  return (Math.ceil(cards.length) * rowHeight);
+}
 
 var Cards = React.createClass({
   getInitialState: function() {
@@ -25,16 +39,19 @@ var Cards = React.createClass({
 
   render: function() { 
     
-    var cards = this.state.allCards;
+    var items = this.props.items;
 
     return (
-      <div className="card-wrapper"> {
-        cards.map(function( card, i ) {
+      <div 
+        className="card-wrapper" 
+        style={this.state.style}
+      > {
+        items.map(function( item, i ) {
           return (
             <Card 
               key={i}
               dragEnabled={true}
-              item={card}
+              item={item}
               itemWidth={350}
               itemHeight={125}
             />
@@ -46,7 +63,7 @@ var Cards = React.createClass({
 
   _onChange: function() {
 
-    console.info('_onChange Cards')
+    //console.info('_onChange Cards')
     //this.setState( getCardState() );
   }
 

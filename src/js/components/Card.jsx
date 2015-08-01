@@ -22,19 +22,20 @@ var Card = React.createClass({
   },
 
   _onChange: function() {
-    console.info('_onChange Card');
+    //console.info('_onChange Card');
     this.setState({
       style: this.getStyle()
     });
   },
 
   render: function() {
-    var card    = this.props.item;
+    var card = this.props.item;
 
     return (
       <div 
         className="card"
         data-key={card.sort}
+        data-group={card.groupID}
         style={this.state.style}
       >
         <p>{card.name}</p>

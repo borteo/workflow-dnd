@@ -14,12 +14,12 @@ module.exports = {
     }
   },
   sass: {
-    includePaths: require('node-bourbon').includePaths,
     src: src + '/styles/**/*.{sass,scss,css}',
     dest: dest + '/styles',
     settings: {
       indentedSyntax: false, // Enable .sass syntax?
-      imagePath: '/images' // Used by the image-url helper
+      imagePath: '/images', // Used by the image-url helper
+      includePaths: require('node-bourbon').includePaths
     }
   },
   browserify: {
