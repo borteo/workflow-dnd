@@ -3,10 +3,22 @@ var Cards = require('./Cards.jsx');
 var CardStore = require('../stores/CardStore.js');
 
 
+// function getItems() {
+//   return 
+// }
+
 var Workflow = React.createClass({
   getInitialState: function() {
     return null;
   },
+
+  // componentWillMount: function() {
+  //   CardStore.addChangeListener(this._onChange);
+  // },
+
+  // componentWillUnmount: function() {
+  //   CardStore.removeChangeListener( this._onChange );
+  // },
 
   render: function() { 
     var groupIDs = [
@@ -27,7 +39,7 @@ var Workflow = React.createClass({
             return (
               <Cards 
                 key={i}
-                items={CardStore.getItemsByGroupID( groupID.id )}
+                groupID={groupID.id}
               />
             )
           })
@@ -35,6 +47,12 @@ var Workflow = React.createClass({
       </div>
     )
   }
+
+  // _onChange: function() {
+
+  //   console.info('_onChange Workflow')
+  //   //this.setState( getCardState() );
+  // }
 
 });
 

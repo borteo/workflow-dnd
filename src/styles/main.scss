@@ -2,6 +2,7 @@
 @import 'bourbon';
 
 .card-wrapper {
+  vertical-align: top;
   position: relative;
   width: 350px;
   margin: 2px;
@@ -13,11 +14,11 @@
   margin-bottom: 20px;
   padding: 1em 2em;
   border-radius: .2em;
-  background: rgb(200,200,200);
+  background: rgba(200, 200, 200, 0.8);
 }
 .card:hover {
-  background: rgba(200,200,200, .8);
+  background: rgba(200,200,200, .7);
 }
 .card:active {
-  background: rgba(255,155,200, .8);
+  background: rgba(255,155,200, .7);
 }

@@ -134,14 +134,12 @@ var DragMixin = {
       return;
     }
 
+    CardAction.setDragState({
+      initialGroupID: this.props.item.groupID
+    });
+
     var clientX = e.clientX;
     var clientY = e.clientY;
-
-    // CardAction.setDragState({
-    //   initialGroupID: this.props.item.groupID
-    // });
-
-    console.log('----------------');
 
     var targetKey, targetGroupID;
     var targetElement = document.elementFromPoint(clientX, clientY);
@@ -155,13 +153,9 @@ var DragMixin = {
       targetElement = targetElement.parentNode;
     }
 
-
-
     // TODO sort property be configurable dragState.item[conf]
     if ( targetKey && targetKey !== dragState.item.sort ) {
       
-      
-
       CardAction.onMove({
         source: dragState.item.sort,
         target: targetKey,

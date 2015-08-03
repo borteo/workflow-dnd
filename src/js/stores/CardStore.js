@@ -57,7 +57,6 @@ var _cards = [
 var _dragState = {
   item: null,
   initialGroupID: 0,
-  targetGroupID: 0,
   newGroupID: 0,
   initialMouseX: 0,
   initialMouseY: 0,
@@ -73,27 +72,41 @@ function setDragState ( item ) {
   _dragState = _.assign( _dragState, item );
 }
 
-function onMove( items ) {
+function onMove( item ) {
 
-  console.log('chiamatoooooooooooooo')
+  var initialGroupID = parseInt(_dragState.initialGroupID, 10);
+  var targetGroupID = parseInt(item.targetGroupID, 10);
 
   var source = _cards.filter( function( card ) {
-    return card.sort === parseInt(items.source, 10) && card.groupID === parseInt(_dragState.initialGroupID, 10);
+    return card.sort === parseInt(item.source, 10) && card.groupID === initialGroupID;
   })[0];
   var target = _cards.filter( function( card ) {
-    return card.sort === parseInt(items.target, 10) && card.groupID === parseInt(items.targetGroupID, 10);
+    return card.sort === parseInt(item.target, 10) && card.groupID === targetGroupID;
   })[0];
 
-  
+
+ // moving item to another group
+  if ( initialGroupID !== targetGroupID ) {
+    console.log('merda 1', source);
+    source.groupID = targetGroupID;
+    console.log('merda 2', source);
+  }
+
+  console.log('--------source:',source, target)
 
   var targetSort = target.sort;
 
   //CAREFUL, For maximum performance we must maintain the array's order, but change sort
   _cards.forEach(function( item ) {
+
+    if ( item.groupID !== targetGroupID ) {
+      return;
+    }
+
     //Decrement sorts between positions when target is greater
     if ( target.sort > source.sort && (item.sort <= target.sort && item.sort > source.sort)){
       item.sort --;
-    //Incremenet sorts between positions when source is greator
+    //Incremenet sorts between positions when source is greater
     } else if ( item.sort >= target.sort && item.sort < source.sort ) {
       item.sort ++;
     }

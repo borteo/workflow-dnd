@@ -2,14 +2,13 @@ var React = require('react');
 var Card = require('./Card.jsx');
 var CardStore = require('../stores/CardStore.js');
 
-
 function getCardState() {
 
-  var allCards = CardStore.getStore();
-  var totalHeight = getTotalHeight( allCards );
+  var itemsByID = CardStore.getItemsByGroupID( this.props.groupID );
+  var totalHeight = getTotalHeight( itemsByID );
 
   return {
-    allCards: allCards,
+    items: itemsByID,
     style: {
       height: totalHeight + 'px'
     }
@@ -21,12 +20,12 @@ function getTotalHeight( cards ){
   var rowHeight = 125;
   var verticalMargin = 20;
 
-  return (Math.ceil(cards.length) * rowHeight);
+  return (Math.ceil(cards.length) * (rowHeight + verticalMargin) - verticalMargin);
 }
 
 var Cards = React.createClass({
   getInitialState: function() {
-    return getCardState();
+    return getCardState.call(this);
   },
 
   componentDidMount: function() {
@@ -38,15 +37,13 @@ var Cards = React.createClass({
   },
 
   render: function() { 
-    
-    var items = this.props.items;
 
     return (
       <div 
         className="card-wrapper" 
         style={this.state.style}
       > {
-        items.map(function( item, i ) {
+        this.state.items.map(function( item, i ) {
           return (
             <Card 
               key={i}
